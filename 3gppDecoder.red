@@ -136,7 +136,7 @@ update-nat-proto: function [
 ]
 
 about-txt: {
-版本: v1.0.0
+版本: v1.0.1
 通过修改配置文件，理论上可以解码wireshark支持的所有协议。
                   By: KONGLONG
 }
@@ -161,6 +161,14 @@ main-window: layout [
     ]
     button "用NPP打开" [
         call rejoin[notepad " decode_result.txt"]
+    ]
+    button "清理" [
+        input-area/text: ""
+        prep-area/text: ""
+        output-area/text: ""
+        clear input-area/text
+        clear prep-area/text
+        clear output-area/text
     ]
     return
     text "输入码流："
