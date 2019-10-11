@@ -161,9 +161,11 @@ update-nat-proto: function [
 
 about-txt: {
 版本: v1.0.5
+源码地址: 
+https://github.com/konglinglong/3gppDecoder
 面向未来的3GPP解码器，通过修改配置文件，理论上可以解码wireshark现在以及以后支持的所有协议。
-                          指导: XuBin
-                          跑腿: KONGLONG
+                                  指导: XuBin
+                                  跑腿: KONGLONG
 }
 
 main-window: layout [
@@ -229,7 +231,7 @@ main-window/actors: make object! [
         ab [
             view/flags [
                 title "关于"
-                text 220x140 about-txt
+                text 300x160 about-txt
                 return
                 OK-btn: button "OK" [unview]
                 ] [modal popup]
