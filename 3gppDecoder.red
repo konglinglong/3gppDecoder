@@ -32,6 +32,7 @@ if error? try [
         text2pcap: rejoin[config/wireshark-dir "/text2pcap.exe"]
         tshark: rejoin[config/wireshark-dir "/tshark.exe"]
         notepad: rejoin[config/notepadpp-dir "/notepad++.exe"]
+        wireshark: rejoin[config/wireshark-dir "/Wireshark.exe"]
     ][
         quit
     ]
@@ -93,9 +94,13 @@ pre-proc-data: function [
     data [string!]
 ] [
     data: proc-hex-str data
-    prep-area/text: data
+    ; prep-area/text: data
     rejoin["0000 " data " 0000"]
 ]
+
+
+wireshark-cmd-arg1: {"uat:user_dlts:\"User 0 (DLT=147)\",\"}
+wireshark-cmd-arg2: {\",\"0\",\"\",\"0\",\"\""}
 
 decode-handler: function [
     proto [string!]
@@ -103,23 +108,42 @@ decode-handler: function [
 ] [
     data-temp: copy data
     data-temp: pre-proc-data data-temp
-    write %textdata.txt data-temp
-    text2pcap_cmd: rejoin[text2pcap " -l 147 textdata.txt decode_temp.pcap"]
+    write %textdata_temp.txt data-temp
+    text2pcap_cmd: rejoin[text2pcap " -l 147 textdata_temp.txt decode_temp.pcap"]
     ; print text2pcap_cmd
     call/wait text2pcap_cmd
 
     ;^(22)是"的转义，^(5c)是\的转义
-    tshark_cmd: rejoin[tshark " -V -o ^(22)uat:user_dlts:^(5c)^(22)User 0 (DLT=147)^(5c)^(22),^(5c)^(22)"
-    proto
-    "^(5c)^(22),^(5c)^(22)0^(5c)^(22),^(5c)^(22)^(5c)^(22),^(5c)^(22)0^(5c)^(22),^(5c)^(22)^(5c)^(22)^(22) -r decode_temp.pcap"]
-    ; print tshark_cmd
+    tshark_cmd: rejoin["^(22)" tshark "^(22) -V -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
+    print tshark_cmd
     write %decode_result.txt "" 
     call/wait/output tshark_cmd %decode_result.txt
 
-    call/wait "del textdata.txt"
-    call/wait "del decode_temp.pcap"
+    call/wait "del textdata_temp.txt"
+    ; call/wait "del decode_temp.pcap"
 
     output-area/text: read %decode_result.txt
+]
+
+
+open-wireshark-handler: function [
+    proto [string!]
+    data [string!]
+] [
+    data-temp: copy data
+    data-temp: pre-proc-data data-temp
+    write %textdata_temp.txt data-temp
+    text2pcap_cmd: rejoin[text2pcap " -l 147 textdata_temp.txt decode_temp.pcap"]
+    ; print text2pcap_cmd
+    call/wait text2pcap_cmd
+
+    ;^(22)是"的转义，^(5c)是\的转义
+    wireshark_cmd: rejoin["^(22)" wireshark "^(22) -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
+    print wireshark_cmd
+    call/shell wireshark_cmd
+
+    call/wait "del textdata_temp.txt"
+    ; call/wait "del decode_temp.pcap"
 ]
 
 update-nat-proto: function [
@@ -136,9 +160,10 @@ update-nat-proto: function [
 ]
 
 about-txt: {
-版本: v1.0.1
-通过修改配置文件，理论上可以解码wireshark支持的所有协议。
-                  By: KONGLONG
+版本: v1.0.5
+面向未来的3GPP解码器，通过修改配置文件，理论上可以解码wireshark现在以及以后支持的所有协议。
+                          指导: XuBin
+                          跑腿: KONGLONG
 }
 
 main-window: layout [
@@ -159,25 +184,28 @@ main-window: layout [
             decode-handler selected-proto input-area/text
         ]
     ]
-    button "用NPP打开" [
+    button "用notepad++打开" [
         call rejoin[notepad " decode_result.txt"]
     ]
-    button "清理" [
+    button "用wireshark打开"[
+        open-wireshark-handler selected-proto input-area/text
+    ]
+    button "清空" [
         input-area/text: ""
-        prep-area/text: ""
+        ; prep-area/text: ""
         output-area/text: ""
         clear input-area/text
-        clear prep-area/text
+        ; clear prep-area/text
         clear output-area/text
     ]
     return
     text "输入码流："
     return
     input-area: area focus "" 800x60
-    return
-    text "码流预处理："
-    return
-    prep-area: area "" 800x60
+    ; return
+    ; text "码流预处理："
+    ; return
+    ;prep-area: area "" 800x60
     return
     text "解码结果："
     return
@@ -201,7 +229,7 @@ main-window/actors: make object! [
         ab [
             view/flags [
                 title "关于"
-                text 180x100 about-txt
+                text 220x140 about-txt
                 return
                 OK-btn: button "OK" [unview]
                 ] [modal popup]
