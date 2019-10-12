@@ -21,7 +21,9 @@ default_config: make map! [
     ]
 
 if error? try [
-        config: load-json read %3gppDecoder.cfg
+        config-data: read %3gppDecoder.cfg
+        replace/all config-data "^(5c)" "/"
+        config: load-json config-data
     ][
         config: default_config
     ]
@@ -160,7 +162,7 @@ update-nat-proto: function [
 ]
 
 about-txt: {
-版本: v1.0.5
+版本: v1.0.6
 源码地址: 
 https://github.com/konglinglong/3gppDecoder
 面向未来的3GPP解码器，通过修改配置文件，理论上可以解码wireshark现在以及以后支持的所有协议。
