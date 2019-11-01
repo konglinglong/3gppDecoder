@@ -16,6 +16,6 @@
 ## 使用
 #### 1. 从GitHub的releases页面下载[3gppDecoder-Release-XXX.zip](https://github.com/konglinglong/3gppDecoder/releases)
 #### 2. 解压到一个文件夹，打开3gppDecoder.cfg配置文件：
- - 修改wireshark路径
- - 修改notepad++路径
+ - 修改wireshark路径（注意：路径只支持"/"，不支持"\\"）
+ - 修改notepad++路径（注意：路径只支持"/"，不支持"\\"）
  - 增加配置文件里面没有但你需要用到的协议（前提是你的wireshark版本支持）
