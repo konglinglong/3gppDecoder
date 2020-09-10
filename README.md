@@ -21,8 +21,11 @@
 
 ## 使用
 ### 方式一：下载源码，下载[RED](https://static.red-lang.org/dl/auto/win/red-latest.exe)
-#### 1. 以脚本形式运行：red.exe 3gppDecoder.red
-#### 2. 编译后再运行：red.exe -r -t windows 3gppDecoder.red
+#### 1. 以脚本形式运行：D:\DevTools\red\red.exe 3gppDecoder.red
+#### 2. 编译后再运行：D:\DevTools\red\red.exe -r -t windows 3gppDecoder.red
+*注意：由于red工具存在BUG，运行的时候都需要使用绝对路径，如我的环境是D:\DevTools\red\red.exe，*
+
+*否则可能会报错：PROGRAM ERROR: Invalid encapsulated data.*
 ### 方式二：下载可执行文件
 #### 1. 从GitHub的releases页面下载[3gppDecoder-Release-XXX.zip](https://github.com/konglinglong/3gppDecoder/releases)
 #### 2. 解压到一个文件夹，打开3gppDecoder.cfg配置文件：
