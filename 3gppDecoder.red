@@ -185,9 +185,9 @@ decode-handler: function [
     if error? try [
             output-area/text: read %decode_result.txt
         ][
-            ; read不支持ANSI编码，要把“中国标准时间”6个字去掉
+            ; read不支持ANSI编码，要把“中国标准时间”6个字转换成UTF-8编码
             binary-data: read/binary %decode_result.txt
-            replace/all binary-data #{ d6 d0 b9 fa b1 ea d7 bc ca b1 bc e4 } #{ 20 }
+            replace/all binary-data #{ d6 d0 b9 fa b1 ea d7 bc ca b1 bc e4 } #{ e4 b8 ad e5 9b bd e6 a0 87 e5 87 86 e6 97 b6 e9 97 b4 }
 
             output-area/text: to-string binary-data
         ]
