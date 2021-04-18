@@ -25,6 +25,7 @@ warn-button-popup: function [
 
 if error? try [
         config-data: read %3gppDecoder.cfg
+        replace/all config-data "^(5c)" "/"
     ][
         warn-button-popup "错误" "在3gppDecoder安装目录下找不到配置文件（3gppDecoder.cfg）"
     ]
@@ -61,7 +62,7 @@ if not equal? last npp-dir #"/" [
     npp-dir: append npp-dir "/"
 ]
 print ws-dir
-print npp-dir
+print npp-dir 
 
 wireshark-app: rejoin[ws-dir "Wireshark.exe"]
 text2pcap-app: rejoin[ws-dir "text2pcap.exe"]
