@@ -33,7 +33,7 @@ if error? try [
 if error? try [
         config: load-json config-data
     ][
-        warn-button-popup "错误" "加载配置文件（3gppDecoder.cfg）时发生错误，请检查配置文件JSON格式"
+        warn-button-popup "错误" "加载配置文件（3gppDecoder.cfg）时发生错误，请使用JSON格式检查工具检查配置文件格式"
     ]
 
 print config
