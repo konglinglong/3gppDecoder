@@ -7,7 +7,7 @@ Red [
     Needs:   'View
 ]
 
-warn-button1-popup: function [
+warn-button-popup: function [
     tt msg [string!]
 ]  [
     view/flags [
@@ -26,27 +26,27 @@ warn-button1-popup: function [
 if error? try [
         config-data: read %3gppDecoder.cfg
     ][
-        warn-button1-popup "错误" "找不到配置文件（3gppDecoder.cfg）"
+        warn-button-popup "错误" "找不到配置文件（3gppDecoder.cfg）"
     ]
 
 if error? try [
         config: load-json config-data
     ][
-        warn-button1-popup "错误" "加载配置文件（3gppDecoder.cfg）时发生错误，请检查配置文件JSON格式"
+        warn-button-popup "错误" "加载配置文件（3gppDecoder.cfg）时发生错误，请检查配置文件JSON格式"
     ]
 
 print config
 
 ws-dir: config/wireshark-dir
 if ws-dir = none [
-        warn-button1-popup "错误" "配置文件中的wireshark-dir不对，请检查配置文件（3gppDecoder.cfg）"
+        warn-button-popup "错误" "配置文件中的wireshark路径不对，请检查配置文件（3gppDecoder.cfg）"
     ]
 replace/all ws-dir "^(5c)" "/"
 replace/all ws-dir "//" "/"
 
 npp-dir: config/notepadpp-dir
 if npp-dir = none [
-        warn-button1-popup "错误" "配置文件中的notepadpp-dir不对，请检查配置文件（3gppDecoder.cfg）"
+        warn-button-popup "错误" "配置文件中的notepadpp路径不对，请检查配置文件（3gppDecoder.cfg）"
     ]
 replace/all npp-dir "^(5c)" "/"
 replace/all npp-dir "//" "/"
@@ -91,7 +91,7 @@ check-file-exist: func [
         ]
     if not wireshark-app-exist [
             error-msg: rejoin["在目录" file-dir "下找不到" file-name "，请检查配置文件（3gppDecoder.cfg）或者" file-name "安装目录"]
-            warn-button1-popup "错误" error-msg
+            warn-button-popup "错误" error-msg
         ]
 ]
 
