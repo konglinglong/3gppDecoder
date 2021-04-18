@@ -25,10 +25,16 @@ warn-button1-popup: function [
 
 if error? try [
         config-data: read %3gppDecoder.cfg
-        config: load-json config-data
     ][
         warn-button1-popup "错误" "找不到配置文件（3gppDecoder.cfg）"
     ]
+
+if error? try [
+        config: load-json config-data
+    ][
+        warn-button1-popup "错误" "加载配置文件（3gppDecoder.cfg）时发生错误，请检查配置文件JSON格式"
+    ]
+
 print config
 
 ws-dir: config/wireshark-dir
