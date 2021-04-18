@@ -176,8 +176,8 @@ decode-handler: function [
     ;^(22)是"的转义，^(5c)是\的转义
     tshark_cmd: rejoin["^(22)" tshark-app "^(22) -V -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
     print tshark_cmd
-    ; write %decode_result.txt "" 
-    ; call/wait/output tshark_cmd %decode_result.txt
+    write %decode_result.txt "" 
+    call/wait/output tshark_cmd %decode_result.txt
 
     call/wait "del text_data_temp.txt"
     ; call/wait "del decode_temp.pcap"
