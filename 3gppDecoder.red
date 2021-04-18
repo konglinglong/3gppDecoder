@@ -2,46 +2,97 @@ Red [
     Title: "3GPP DECODER"
     Author: "KONGLONG"
     Date: 2019-10-01
-    Version: 1.0.0
+    Version: 1.1.0
     purpose: "解码wireshark能支持的所有协议"
     Needs:   'View
 ]
 
-default_config: make map! [
-    wireshark-dir: "C:/Program Files/Wireshark"
-    notepadpp-dir: "C:/Program Files/Notepad++"
-    NAT: [
-        #(LTE: [
-            "lte-rrc.dl.ccch" "lte-rrc.dl.dcch" "lte-rrc.ul.ccch" "lte-rrc.ul.dcch" "s1ap" "x2ap"
-            ])
-        #(NR: [
-            "nr-rrc.dl.ccch" "nr-rrc.dl.dcch" "nr-rrc.ul.ccch" "nr-rrc.ul.dcch" "xnap"
-            ])
+warn-button1-popup: function [
+    tt msg [string!]
+]  [
+    view/flags [
+        title tt
+        on-close [quit] 
+        msg-text: text font-color red msg center wrap return
+        no-btn: button "退出" [quit]
+        do [
+            msg-text/size/y: msg-text/size/y * 2
+            win-centre: (2 * msg-text/offset/x + msg-text/size/x) / 2
+            no-btn/offset/x: to integer! win-centre - to integer! (no-btn/size/x / 2)
         ]
-    ]
+    ] [modal popup]
+]
 
 if error? try [
         config-data: read %3gppDecoder.cfg
-        replace/all config-data "^(5c)" "/"
         config: load-json config-data
     ][
-        config: default_config
+        warn-button1-popup "错误" "找不到配置文件（3gppDecoder.cfg）"
     ]
 print config
-; print ? config/NAT/1/LTE
-if error? try [
-        ws_path: config/wireshark-dir
-        text2pcap: rejoin[config/wireshark-dir "/text2pcap.exe"]
-        tshark: rejoin[config/wireshark-dir "/tshark.exe"]
-        notepad: rejoin[config/notepadpp-dir "/notepad++.exe"]
-        wireshark: rejoin[config/wireshark-dir "/Wireshark.exe"]
-    ][
-        quit
+
+ws-dir: config/wireshark-dir
+if ws-dir = none [
+        warn-button1-popup "错误" "配置文件中的wireshark-dir不对，请检查配置文件（3gppDecoder.cfg）"
     ]
-; print ws_path
-; print text2pcap
-; print tshark
-; print length? tshark
+replace/all ws-dir "^(5c)" "/"
+replace/all ws-dir "//" "/"
+
+npp-dir: config/notepadpp-dir
+if npp-dir = none [
+        warn-button1-popup "错误" "配置文件中的notepadpp-dir不对，请检查配置文件（3gppDecoder.cfg）"
+    ]
+replace/all npp-dir "^(5c)" "/"
+replace/all npp-dir "//" "/"
+
+print ws-dir
+print npp-dir
+
+if not equal? last ws-dir #"/" [
+    ws-dir: append ws-dir "/"
+]
+if not equal? last npp-dir #"/" [
+    npp-dir: append npp-dir "/"
+]
+print ws-dir
+print npp-dir
+
+wireshark-app: rejoin[ws-dir "Wireshark.exe"]
+text2pcap-app: rejoin[ws-dir "text2pcap.exe"]
+tshark-app: rejoin[ws-dir "tshark.exe"]
+notepad-app: rejoin[npp-dir "notepad++.exe"]
+
+print wireshark-app
+print text2pcap-app
+print tshark-app
+print notepad-app
+
+check-file-exist: func [
+    file-dir [string!]
+    file-name [string!]
+] [
+    wireshark-app-exist: false
+    if error? try [
+        folder: read to-file file-dir
+        foreach f folder [
+            if find f file-name [
+                wireshark-app-exist: true
+                break
+            ]
+        ]
+        ][
+            wireshark-app-exist: false
+        ]
+    if not wireshark-app-exist [
+            error-msg: rejoin["在目录" file-dir "下找不到" file-name "，请检查配置文件（3gppDecoder.cfg）或者" file-name "安装目录"]
+            warn-button1-popup "错误" error-msg
+        ]
+]
+
+check-file-exist ws-dir "Wireshark.exe"
+check-file-exist ws-dir "text2pcap.exe"
+check-file-exist ws-dir "tshark.exe"
+check-file-exist npp-dir "notepad++.exe"
 
 nats: make block! []
 foreach p config/NAT [
@@ -111,12 +162,12 @@ decode-handler: function [
     data-temp: copy data
     data-temp: pre-proc-data data-temp
     write %textdata_temp.txt data-temp
-    text2pcap_cmd: rejoin[text2pcap " -l 147 textdata_temp.txt decode_temp.pcap"]
+    text2pcap_cmd: rejoin[text2pcap-app " -l 147 textdata_temp.txt decode_temp.pcap"]
     ; print text2pcap_cmd
     call/wait text2pcap_cmd
 
     ;^(22)是"的转义，^(5c)是\的转义
-    tshark_cmd: rejoin["^(22)" tshark "^(22) -V -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
+    tshark_cmd: rejoin["^(22)" tshark-app "^(22) -V -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
     print tshark_cmd
     write %decode_result.txt "" 
     call/wait/output tshark_cmd %decode_result.txt
@@ -127,7 +178,6 @@ decode-handler: function [
     output-area/text: read %decode_result.txt
 ]
 
-
 open-wireshark-handler: function [
     proto [string!]
     data [string!]
@@ -135,12 +185,12 @@ open-wireshark-handler: function [
     data-temp: copy data
     data-temp: pre-proc-data data-temp
     write %textdata_temp.txt data-temp
-    text2pcap_cmd: rejoin[text2pcap " -l 147 textdata_temp.txt decode_temp.pcap"]
+    text2pcap_cmd: rejoin[text2pcap-app " -l 147 textdata_temp.txt decode_temp.pcap"]
     ; print text2pcap_cmd
     call/wait text2pcap_cmd
 
     ;^(22)是"的转义，^(5c)是\的转义
-    wireshark_cmd: rejoin["^(22)" wireshark "^(22) -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
+    wireshark_cmd: rejoin["^(22)" wireshark-app "^(22) -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
     print wireshark_cmd
     call/shell wireshark_cmd
 
@@ -162,7 +212,7 @@ update-nat-proto: function [
 ]
 
 about-txt: {
-版本: v1.0.6
+版本: v1.1.0
 源码地址: 
 https://github.com/konglinglong/3gppDecoder
 面向未来的3GPP解码器，通过修改配置文件，理论上可以解码wireshark现在以及以后支持的所有协议。
@@ -189,7 +239,7 @@ main-window: layout [
         ]
     ]
     button "用notepad++打开" [
-        call rejoin[notepad " decode_result.txt"]
+        call rejoin[notepad-app " decode_result.txt"]
     ]
     button "用wireshark打开"[
         open-wireshark-handler selected-proto input-area/text
@@ -241,4 +291,5 @@ main-window/actors: make object! [
             ] ] ]
 
 view main-window
+
 
