@@ -168,21 +168,30 @@ decode-handler: function [
 ] [
     data-temp: copy data
     data-temp: pre-proc-data data-temp
-    write %textdata_temp.txt data-temp
-    text2pcap_cmd: rejoin[text2pcap-app " -l 147 textdata_temp.txt decode_temp.pcap"]
+    write %text_data_temp.txt data-temp
+    text2pcap_cmd: rejoin[text2pcap-app " -l 147 text_data_temp.txt decode_temp.pcap"]
     ; print text2pcap_cmd
     call/wait text2pcap_cmd
 
     ;^(22)是"的转义，^(5c)是\的转义
     tshark_cmd: rejoin["^(22)" tshark-app "^(22) -V -o " wireshark-cmd-arg1 proto wireshark-cmd-arg2 " -r decode_temp.pcap"]
     print tshark_cmd
-    write %decode_result.txt "" 
-    call/wait/output tshark_cmd %decode_result.txt
+    ; write %decode_result.txt "" 
+    ; call/wait/output tshark_cmd %decode_result.txt
 
-    call/wait "del textdata_temp.txt"
+    call/wait "del text_data_temp.txt"
     ; call/wait "del decode_temp.pcap"
 
-    output-area/text: read %decode_result.txt
+    if error? try [
+            output-area/text: read %decode_result.txt
+        ][
+            ; read不支持ANSI编码，要把“中国标准时间”6个字去掉
+            binary-data: read/binary %decode_result.txt
+            replace/all binary-data #{ d6 d0 b9 fa b1 ea d7 bc ca b1 bc e4 } #{}
+
+            output-area/text: to-string binary-data
+        ]
+
 ]
 
 open-wireshark-handler: function [
@@ -191,8 +200,8 @@ open-wireshark-handler: function [
 ] [
     data-temp: copy data
     data-temp: pre-proc-data data-temp
-    write %textdata_temp.txt data-temp
-    text2pcap_cmd: rejoin[text2pcap-app " -l 147 textdata_temp.txt decode_temp.pcap"]
+    write %text_data_temp.txt data-temp
+    text2pcap_cmd: rejoin[text2pcap-app " -l 147 text_data_temp.txt decode_temp.pcap"]
     ; print text2pcap_cmd
     call/wait text2pcap_cmd
 
@@ -201,7 +210,7 @@ open-wireshark-handler: function [
     print wireshark_cmd
     call/shell wireshark_cmd
 
-    call/wait "del textdata_temp.txt"
+    call/wait "del text_data_temp.txt"
     ; call/wait "del decode_temp.pcap"
 ]
 
