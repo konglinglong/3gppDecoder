@@ -220,7 +220,7 @@ update-nat-proto: function [
 about-txt: {
 版本: v1.1.0
 源码地址: 
-https://github.com/konglinglong/3gppDecoder
+https://gitee.com/konglinglong/3gppDecoder
 面向未来的3GPP解码器，通过修改配置文件，理论上可以解码wireshark现在以及以后支持的所有协议。
                                   指导: XuBin
                                   跑腿: KONGLONG
