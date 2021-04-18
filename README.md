@@ -4,7 +4,7 @@
 # 注意
 由于目前中美大环境，以及github网络时不时出点问题，项目已经转到gitee中：
 
-https://gitee.com/konglinglong/3gppDecoder.git
+https://gitee.com/konglinglong/3gppDecoder
 
 ## 概述
 
