@@ -26,7 +26,7 @@ warn-button-popup: function [
 if error? try [
         config-data: read %3gppDecoder.cfg
     ][
-        warn-button-popup "错误" "找不到配置文件（3gppDecoder.cfg）"
+        warn-button-popup "错误" "在3gppDecoder安装目录下找不到配置文件（3gppDecoder.cfg）"
     ]
 
 if error? try [
