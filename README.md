@@ -1,6 +1,11 @@
 3gppDecoder
 =====
 
+# 注意
+由于目前中美大环境，以及github网络时不时出点问题，项目已经转到gitee中：
+
+https://gitee.com/konglinglong/3gppDecoder.git
+
 ## 概述
 
 使用RED语言实现的3GPP解码器，可执行文件仅1M。
