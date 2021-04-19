@@ -32,8 +32,8 @@ https://gitee.com/konglinglong/3gppDecoder
 
 *否则可能会报错：PROGRAM ERROR: Invalid encapsulated data.*
 ### 方式二：下载可执行文件
-#### 1. 从GitHub的releases页面下载[3gppDecoder-Release-XXX.zip](https://github.com/konglinglong/3gppDecoder/releases)
+#### 1. 从GitHub的[releases](https://github.com/konglinglong/3gppDecoder/releases)页面下载最新版本
 #### 2. 解压到一个文件夹，打开3gppDecoder.cfg配置文件：
- - 修改wireshark路径（注意：路径只支持"/"，不支持"\\"）
- - 修改notepad++路径（注意：路径只支持"/"，不支持"\\"）
- - 增加配置文件里面没有但你需要用到的协议（前提是你的wireshark版本支持）
+ - 修改wireshark路径
+ - 修改notepad++路径
+ - 增加配置文件里面没有但你需要用到的协议（前提是你的wireshark版本支持，建议升级wireshark到较新版本）
